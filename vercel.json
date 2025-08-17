@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "backend/src/index.ts",
+      "src": "backend/src/**/*.ts",
       "use": "@vercel/node"
     }
   ],
@@ -19,28 +19,12 @@
       "dest": "/backend/src/index.ts"
     },
     {
-      "src": "/login",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/signup", 
-      "dest": "/index.html"
-    },
-    {
-      "src": "/file/(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/url/(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg))",
-      "dest": "/$1"
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
+      "dest": "/frontend/dist/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/frontend/dist/index.html"
     }
   ],
   "env": {

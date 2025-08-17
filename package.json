@@ -1,0 +1,17 @@
+{
+  "name": "vulnerability-scanner",
+  "version": "1.0.0",
+  "description": "A defensive web application for file analysis and URL phishing detection",
+  "scripts": {
+    "build": "cd frontend && npm ci && npm run build",
+    "start": "cd backend && npm start",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "keywords": ["security", "vulnerability", "scanner", "phishing", "malware"],
+  "author": "ojhaddeepak",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
