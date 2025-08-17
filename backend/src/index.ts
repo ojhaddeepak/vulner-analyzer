@@ -1,20 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import cron from 'node-cron';
-
+import { errorHandler } from './middleware/errorHandler';
+import { requestLogger } from './middleware/requestLogger';
 import { fileScanRoutes } from './routes/fileScan';
 import { urlCheckRoutes } from './routes/urlCheck';
 import { authRoutes } from './routes/auth';
-import { healthRoutes } from './routes/health';
-import { errorHandler } from './middleware/errorHandler';
-import { cleanupUploads } from './utils/cleanup';
+import { setupSwagger } from './utils/swagger';
 import { logger } from './utils/logger';
+import cron from 'node-cron';
+import { cleanupUploads } from './utils/cleanup';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -102,7 +99,13 @@ process.on('SIGINT', async () => {
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`API documentation available at http://localhost:${PORT}/api/docs`);
-});
+// For Vercel serverless deployment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`API documentation available at http://localhost:${PORT}/api/docs`);
+  });
+}
+
+// Export for Vercel
+export default app;
