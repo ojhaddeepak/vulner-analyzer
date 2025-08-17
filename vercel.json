@@ -5,7 +5,7 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "frontend/dist"
+        "distDir": "dist"
       }
     },
     {
@@ -20,27 +20,27 @@
     },
     {
       "src": "/login",
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/signup", 
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/file/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/url/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg))",
-      "dest": "/frontend/dist/$1"
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     }
   ],
   "env": {
