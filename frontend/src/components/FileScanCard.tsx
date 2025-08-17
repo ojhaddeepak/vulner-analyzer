@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { Upload, FileText, AlertCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { fileApi } from '../lib/api'
-import { formatFileSize } from '../lib/utils'
 
 export function FileScanCard() {
   const [isUploading, setIsUploading] = useState(false)

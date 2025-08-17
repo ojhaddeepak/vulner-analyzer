@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Download, Globe, AlertTriangle } from 'lucide-react'
-import { toast } from 'react-hot-toast'
+import { ArrowLeft, AlertTriangle, Globe } from 'lucide-react'
 import { urlApi, UrlCheckResult } from '../lib/api'
-import { copyToClipboard, getClassificationColor } from '../lib/utils'
+import { getClassificationColor } from '../lib/utils'
 import { RiskMeter } from '../components/RiskMeter'
 import { SignalsList } from '../components/SignalsList'
 

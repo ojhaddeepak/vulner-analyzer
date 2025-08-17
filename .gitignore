@@ -108,3 +108,5 @@ Thumbs.db
 # Prisma
 prisma/migrations/
 !prisma/migrations/.gitkeep
+
+.vercel

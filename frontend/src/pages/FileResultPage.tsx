@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Copy, Download, FileText, AlertTriangle, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Download, AlertTriangle, Copy, CheckCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { fileApi, FileScanResult } from '../lib/api'
 import { formatFileSize, copyToClipboard, getRiskLevelColor } from '../lib/utils'
