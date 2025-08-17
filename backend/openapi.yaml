@@ -1,0 +1,500 @@
+openapi: 3.1.0
+info:
+  title: Vulnerability Scanner API
+  version: 1.0.0
+  description: API for file analysis and URL phishing detection
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.vulnerabilityscanner.com
+    description: Production server
+
+paths:
+  /api/health:
+    get:
+      summary: Health check endpoint
+      description: Returns basic health status of the application
+      responses:
+        '200':
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                    example: "1.0.0"
+
+  /api/health/ready:
+    get:
+      summary: Readiness probe
+      description: Checks if the application is ready to serve requests
+      responses:
+        '200':
+          description: Application is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ready"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  database:
+                    type: string
+                    example: "connected"
+        '503':
+          description: Application is not ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "not ready"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  database:
+                    type: string
+                    example: "disconnected"
+                  error:
+                    type: string
+
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                password:
+                  type: string
+                  minLength: 8
+                  description: User password (minimum 8 characters)
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created successfully"
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+                    description: JWT authentication token
+        '400':
+          description: Invalid input or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/login:
+    post:
+      summary: Login user
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                password:
+                  type: string
+                  description: User password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successful"
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+                    description: JWT authentication token
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/files/scan:
+    post:
+      summary: Upload and analyze a file
+      description: Upload a file for security analysis and risk assessment
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: File to analyze
+      responses:
+        '200':
+          description: File analysis completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileScanResult'
+        '400':
+          description: Invalid file or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/files/{id}:
+    get:
+      summary: Get file analysis result by ID
+      description: Retrieve the analysis results for a previously scanned file
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: File scan ID
+      responses:
+        '200':
+          description: File analysis result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileScanResult'
+        '404':
+          description: File scan not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete file scan result
+      description: Delete a file scan result and associated file
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: File scan ID
+      responses:
+        '200':
+          description: File scan deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "File scan deleted successfully"
+        '404':
+          description: File scan not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/urls/check:
+    post:
+      summary: Check URL for phishing indicators
+      description: Analyze a URL for potential phishing or malicious indicators
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: URL to analyze
+      responses:
+        '200':
+          description: URL analysis completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlCheckResult'
+        '400':
+          description: Invalid URL format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/urls/{id}:
+    get:
+      summary: Get URL check result by ID
+      description: Retrieve the analysis results for a previously checked URL
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: URL check ID
+      responses:
+        '200':
+          description: URL check result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlCheckResult'
+        '404':
+          description: URL check not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete URL check result
+      description: Delete a URL check result
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: URL check ID
+      responses:
+        '200':
+          description: URL check deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "URL check deleted successfully"
+        '404':
+          description: URL check not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+        email:
+          type: string
+          format: email
+          description: User email address
+        createdAt:
+          type: string
+          format: date-time
+          description: User creation timestamp
+
+    FileScanResult:
+      type: object
+      properties:
+        id:
+          type: string
+          description: File scan ID
+        hashes:
+          type: object
+          properties:
+            md5:
+              type: string
+              description: MD5 hash
+            sha1:
+              type: string
+              description: SHA-1 hash
+            sha256:
+              type: string
+              description: SHA-256 hash
+        metadata:
+          type: object
+          properties:
+            fileName:
+              type: string
+              description: Original file name
+            size:
+              type: integer
+              description: File size in bytes
+            mimeType:
+              type: string
+              description: MIME type
+            extension:
+              type: string
+              description: File extension
+        riskScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Risk score (0-100)
+        riskLevel:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Risk level classification
+        signals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signal'
+          description: Security analysis signals
+        nextSteps:
+          type: array
+          items:
+            type: string
+          description: Recommended next steps
+        createdAt:
+          type: string
+          format: date-time
+          description: Analysis timestamp
+
+    UrlCheckResult:
+      type: object
+      properties:
+        id:
+          type: string
+          description: URL check ID
+        normalizedUrl:
+          type: string
+          format: uri
+          description: Normalized URL
+        domain:
+          type: string
+          description: Domain name
+        classification:
+          type: string
+          enum: [LIKELY_GENUINE, SUSPICIOUS, UNKNOWN]
+          description: URL classification
+        confidence:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Confidence score (0-100)
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Risk score (0-100)
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signal'
+          description: Analysis reasons
+        tips:
+          type: array
+          items:
+            type: string
+          description: Safety tips
+        createdAt:
+          type: string
+          format: date-time
+          description: Analysis timestamp
+
+    Signal:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Signal identifier
+        title:
+          type: string
+          description: Signal title
+        weight:
+          type: integer
+          description: Signal weight/importance
+        why:
+          type: string
+          description: Explanation of why this signal matters
+        evidence:
+          type: string
+          description: Evidence supporting this signal
+        riskLevel:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: Risk level of this signal
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Error message
+            statusCode:
+              type: integer
+              description: HTTP status code
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+security:
+  - bearerAuth: []

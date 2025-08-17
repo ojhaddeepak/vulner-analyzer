@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  fileScans FileScan[]
+  urlChecks UrlCheck[]
+
+  @@map("users")
+}
+
+model FileScan {
+  id          String   @id @default(cuid())
+  userId      String?
+  fileName    String
+  originalName String
+  size        Int
+  mimeType    String
+  md5         String
+  sha1        String
+  sha256      String
+  riskScore   Int
+  riskLevel   String
+  signalsJson String   // JSON string of analysis signals
+  metadataJson String  // JSON string of file metadata
+  nextStepsJson String // JSON string of recommended next steps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([sha256])
+  @@index([createdAt])
+  @@index([userId])
+
+  @@map("file_scans")
+}
+
+model UrlCheck {
+  id              String           @id @default(cuid())
+  userId          String?
+  url             String
+  normalizedUrl   String
+  domain          String
+  classification  String
+  confidence      Int
+  score           Int
+  reasonsJson     String           // JSON string of analysis reasons
+  tipsJson        String           // JSON string of safety tips
+  metadataJson    String           // JSON string of URL metadata
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([domain])
+  @@index([createdAt])
+  @@index([userId])
+
+  @@map("url_checks")
+}
+
+

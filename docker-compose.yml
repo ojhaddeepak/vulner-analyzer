@@ -1,0 +1,73 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: vulnscanner
+      POSTGRES_USER: vulnscanner
+      POSTGRES_PASSWORD: vulnscanner_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vulnscanner"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://vulnscanner:vulnscanner_dev@postgres:5432/vulnscanner
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      RATE_LIMIT_FILES: 5
+      RATE_LIMIT_URLS: 20
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE: 26214400
+    volumes:
+      - ./backend:/app
+      - backend_uploads:/app/uploads
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  # Optional: ClamAV for virus scanning
+  clamav:
+    image: clamav/clamav:latest
+    ports:
+      - "3310:3310"
+    volumes:
+      - clamav_data:/var/lib/clamav
+    environment:
+      CLAMD_OPTS: "--log-verbose"
+    profiles:
+      - virus-scanning
+
+volumes:
+  postgres_data:
+  backend_uploads:
+  clamav_data:
