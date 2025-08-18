@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Shield, Mail, Lock, ArrowRight } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { authApi } from '../lib/api'
+// Removed authApi import for standalone version
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -27,12 +27,11 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (_data: LoginForm) => {
     setIsLoading(true)
     try {
-      const result = await authApi.login(data.email, data.password)
-      localStorage.setItem('token', result.token)
-      localStorage.setItem('user', JSON.stringify(result.user))
+      // Mock login for standalone version
+      await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('Welcome back! 🎉')
       navigate('/')
     } catch (error) {

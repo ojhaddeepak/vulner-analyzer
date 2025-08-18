@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Shield, Mail, Lock, ArrowRight, User, CheckCircle } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { authApi } from '../lib/api'
+// Removed authApi import for standalone version
 
 const signupSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -46,16 +46,15 @@ export function SignupPage() {
     { label: 'One number', met: /[0-9]/.test(password) },
   ]
 
-  const onSubmit = async (data: SignupForm) => {
+  const onSubmit = async (_data: SignupForm) => {
     setIsLoading(true)
     try {
-      const result = await authApi.register(data.email, data.password)
-      localStorage.setItem('token', result.token)
-      localStorage.setItem('user', JSON.stringify(result.user))
+      // Mock signup for standalone version
+      await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('Account created successfully! 🎉')
       navigate('/')
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to create account')
+      toast.error('Failed to create account')
     } finally {
       setIsLoading(false)
     }
