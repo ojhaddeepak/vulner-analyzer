@@ -38,8 +38,8 @@ A defensive web application for file analysis and URL phishing detection. This t
 
 ```bash
 # Clone and setup
-git clone <repository-url>
-cd vulnerability-scanner
+git clone https://github.com/ojhaddeepak/security-analyzer.git
+cd security-analyzer
 
 # Start all services
 docker-compose up --build
