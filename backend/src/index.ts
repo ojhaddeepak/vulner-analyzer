@@ -5,9 +5,14 @@ import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
+import compression from 'compression';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import { fileScanRoutes } from './routes/fileScan';
 import { urlCheckRoutes } from './routes/urlCheck';
 import { authRoutes } from './routes/auth';
+import { passwordRoutes } from './routes/password';
+import { oauthRoutes } from './routes/oauth';
 import { setupSwagger } from './utils/swagger';
 import { logger } from './utils/logger';
 import cron from 'node-cron';
@@ -68,6 +73,8 @@ const urlCheckLimiter = rateLimit({
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/password', passwordRoutes);
+app.use('/api/oauth', oauthRoutes);
 app.use('/api/files', fileScanLimiter, fileScanRoutes);
 app.use('/api/urls', urlCheckLimiter, urlCheckRoutes);
 

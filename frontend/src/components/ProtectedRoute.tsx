@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { Shield, Lock } from 'lucide-react'
+import { authService } from '../lib/auth'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -10,9 +11,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const user = localStorage.getItem('user')
-    setIsAuthenticated(!!token && !!user)
+    // Use authService to check authentication status
+    const isAuth = authService.isAuthenticated()
+    setIsAuthenticated(isAuth)
   }, [])
 
   // Loading state

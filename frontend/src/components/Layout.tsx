@@ -1,14 +1,10 @@
 import { ReactNode, useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Shield, FileText, Globe, Github, User, LogOut, LogIn } from 'lucide-react'
+import { Shield, FileText, Globe, Github, User as UserIcon, LogOut, LogIn } from 'lucide-react'
+import { authService, type User } from '../lib/auth'
 
 interface LayoutProps {
   children: ReactNode
-}
-
-interface User {
-  id: string
-  email: string
 }
 
 export function Layout({ children }: LayoutProps) {
@@ -16,23 +12,20 @@ export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const userData = localStorage.getItem('user')
-    if (token && userData) {
-      setUser(JSON.parse(userData))
-    }
+    // Get current user from authService
+    const currentUser = authService.getCurrentUser()
+    setUser(currentUser)
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    authService.logout()
     setUser(null)
-    navigate('/')
+    navigate('/login')
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
+    <div className="min-h-screen bg-background dark:bg-slate-900">
+      <header className="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
@@ -43,14 +36,14 @@ export function Layout({ children }: LayoutProps) {
             <nav className="flex items-center space-x-6">
               <Link 
                 to="/" 
-                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <FileText className="h-4 w-4" />
                 <span>File Scan</span>
               </Link>
               <Link 
                 to="/" 
-                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <Globe className="h-4 w-4" />
                 <span>URL Check</span>
@@ -59,23 +52,23 @@ export function Layout({ children }: LayoutProps) {
                 href="https://github.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 <Github className="h-4 w-4" />
                 <span>GitHub</span>
               </a>
               
               {/* Authentication Section */}
-              <div className="flex items-center space-x-4 ml-4 pl-4 border-l">
+              <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-slate-200 dark:border-slate-600">
                 {user ? (
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-2 text-sm">
-                      <User className="h-4 w-4 text-primary" />
-                      <span className="text-foreground">{user.email}</span>
+                      <UserIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-slate-700 dark:text-slate-200">{user.email}</span>
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-colors"
+                      className="flex items-center space-x-1 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>Logout</span>
@@ -85,14 +78,14 @@ export function Layout({ children }: LayoutProps) {
                   <div className="flex items-center space-x-3">
                     <Link 
                       to="/login"
-                      className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-colors"
+                      className="flex items-center space-x-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
                       <LogIn className="h-4 w-4" />
                       <span>Login</span>
                     </Link>
                     <Link 
                       to="/signup"
-                      className="bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+                      className="bg-blue-600 dark:bg-blue-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                     >
                       Sign Up
                     </Link>
