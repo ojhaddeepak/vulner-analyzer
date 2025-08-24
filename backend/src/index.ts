@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
+
 import compression from 'compression';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -13,6 +14,7 @@ import { urlCheckRoutes } from './routes/urlCheck';
 import { authRoutes } from './routes/auth';
 import { passwordRoutes } from './routes/password';
 import { oauthRoutes } from './routes/oauth';
+import { healthRoutes } from './routes/health';
 import { setupSwagger } from './utils/swagger';
 import { logger } from './utils/logger';
 import cron from 'node-cron';

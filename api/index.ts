@@ -1,43 +1,43 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import express from 'express';
-import cors from 'cors';
-import multer from 'multer';
 
-// Import your existing backend routes
-import { authRoutes } from '../backend/src/routes/auth';
-import { fileScanRoutes } from '../backend/src/routes/fileScan';
-import { urlCheckRoutes } from '../backend/src/routes/urlCheck';
-import { healthRoutes } from '../backend/src/routes/health';
+// Simple serverless function handler
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-const app = express();
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  // Basic routing based on URL path
+  const { url } = req;
 
-// Configure multer for file uploads
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
-  },
-});
+  if (url === '/api' || url === '/api/') {
+    return res.json({
+      message: 'Vulnerability Scanner API is running',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      status: 'ok'
+    });
+  }
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/files', upload.single('file'), fileScanRoutes);
-app.use('/api/url', urlCheckRoutes);
-app.use('/api/health', healthRoutes);
+  if (url === '/api/health' || url?.startsWith('/api/health')) {
+    return res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      environment: 'production'
+    });
+  }
 
-// Health check endpoint
-app.get('/api', (req, res) => {
-  res.json({ 
-    message: 'Vulnerability Scanner API is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
+  // Default response for unmatched routes
+  res.status(404).json({
+    error: 'Not Found',
+    message: 'API endpoint not found',
+    timestamp: new Date().toISOString()
   });
-});
-
-// Export for Vercel
-export default app;
+}
