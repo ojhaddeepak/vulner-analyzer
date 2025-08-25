@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Shield, Mail, Lock, ArrowRight, User, CheckCircle } from 'lucide-react'
-import { toast } from 'react-hot-toast'
 import { authService } from '../lib/auth'
 
 const signupSchema = z.object({
@@ -53,6 +52,7 @@ export function SignupPage() {
       navigate('/')
     } catch (error: any) {
       // Error handling is done in authService
+      console.error('Signup error:', error)
     } finally {
       setIsLoading(false)
     }
@@ -64,6 +64,7 @@ export function SignupPage() {
       navigate('/')
     } catch (error) {
       // Error handling is done in authService
+      console.error('Google signup error:', error)
     }
   }
 
@@ -73,6 +74,7 @@ export function SignupPage() {
       // Navigation will happen after redirect
     } catch (error) {
       // Error handling is done in authService
+      console.error('GitHub signup error:', error)
     }
   }
 

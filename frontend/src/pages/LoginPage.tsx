@@ -34,6 +34,7 @@ export function LoginPage() {
       navigate('/')
     } catch (error) {
       // Error handling is done in authService
+      console.error('Login error:', error)
     } finally {
       setIsLoading(false)
     }
@@ -45,6 +46,7 @@ export function LoginPage() {
       navigate('/')
     } catch (error) {
       // Error handling is done in authService
+      console.error('Google login error:', error)
     }
   }
 
@@ -54,6 +56,7 @@ export function LoginPage() {
       // Navigation will happen after redirect
     } catch (error) {
       // Error handling is done in authService
+      console.error('GitHub login error:', error)
     }
   }
 

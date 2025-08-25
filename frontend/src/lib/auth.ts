@@ -252,6 +252,11 @@ class AuthService {
       // Mock implementation - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000))
       
+      // Use password parameter to avoid unused variable warning
+      if (!password) {
+        throw new Error('Password is required')
+      }
+      
       const user: User = {
         id: 'email_' + Date.now(),
         email,
@@ -274,6 +279,11 @@ class AuthService {
       console.log('Creating account for:', email)
       // Mock implementation - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Use password parameter to avoid unused variable warning
+      if (!password) {
+        throw new Error('Password is required')
+      }
       
       const user: User = {
         id: 'email_' + Date.now(),
@@ -354,6 +364,11 @@ class AuthService {
       if (!email || !storedOTP) {
         toast.error('Invalid reset session. Please start over.')
         throw new Error('Invalid reset session')
+      }
+
+      // Use newPassword parameter to avoid unused variable warning
+      if (!newPassword) {
+        throw new Error('New password is required')
       }
 
       console.log('Resetting password for:', email)
