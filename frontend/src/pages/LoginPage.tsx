@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, Shield, Mail, Lock, ArrowRight } from 'lucide-react'
-import { toast } from 'react-hot-toast'
 import { authService } from '../lib/auth'
 
 const loginSchema = z.object({
