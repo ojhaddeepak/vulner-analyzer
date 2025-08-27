@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/dist",
-  "installCommand": "npm install && cd frontend && npm install && cd ../api && npm install",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -13,20 +10,21 @@
     },
     {
       "src": "api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 30
-      }
+      "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.ts"
+      "src": "/api/(.*)",
+      "dest": "/api/index.ts"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/frontend/dist/$1"
+    },
+    {
+      "src": "/.*",
+      "dest": "/frontend/dist/index.html"
     }
   ]
 }

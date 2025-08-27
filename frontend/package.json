@@ -13,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "format": "prettier --write src/**/*.{ts,tsx,css,md}",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build",
+    "build-vercel": "npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
